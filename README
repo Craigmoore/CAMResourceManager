@@ -2,8 +2,9 @@ ResourceManager is a singleton javascript object that acts a central resource lo
 
 It is dependant on
 
-1) John Resig's JSON2.stringify() function
-2) jshash-2.2 (although this is more of an aesthetic decision, I am using JSON as hashes for the cacheing keys, this can be ignored by commenting/uncommenting line 43-44).
+1) JQuery (current version v1.4.4)
+2) John Resig's JSON2.stringify() function
+3) jshash-2.2 (although this is more of an aesthetic decision, I am using JSON as hashes for the cacheing keys, this can be ignored by commenting/uncommenting line 43-44).
 
 When referring to a resource, it not necessarily known whether or not the resource has been loaded or not. By creating a request object in the format
 
@@ -33,8 +34,6 @@ ResourceManager.resourceProcessingFunctions.Material = function(gl, resources, j
 	var m = new MyArbritraryObject(resources);
 	return m;
 };
-
-You will notice the additional parameters "gl" and "junkDiv", these are specific to an application I am developing and can be removed.
 
 One additional "feature" is that if 2-3 requests are attempted to be made simultaneously, the first request will be made and the subsequent requests will be added to the "waitingForResources" list, and then the resource becomes available, all requests are fired to process the resource.
 

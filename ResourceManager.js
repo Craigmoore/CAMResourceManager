@@ -110,7 +110,7 @@ var ResourceManager = {
 			data : inReq.data,
 			success: function(data) {
 			
-				if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](ResourceManager.gl, data, ResourceManager.junkDiv);
+				if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](data, ResourceManager.junkDiv);
 				else ResourceManager.resources[inReq.key] = data;
 
 				for (var counter = 0; counter < ResourceManager.waitingForResource[inReq.key].length; counter ++) {
@@ -172,7 +172,7 @@ var ResourceManager = {
 				
 				// If the function exists, pass the resources loadedd as parameters
 				if (req.masterReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc])
-					ResourceManager.resources[req.masterReq.key] = ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc](ResourceManager.gl, req.masterReq.resources, ResourceManager.junkDiv);
+					ResourceManager.resources[req.masterReq.key] = ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc](req.masterReq.resources, ResourceManager.junkDiv);
 				else ResourceManager.resources[req.masterReq.key] = req.masterReq.resources;
 
 				if (ResourceManager.waitingForResource[req.key].length > 1) console.log(['Processing more than one request for ', req.key]);
