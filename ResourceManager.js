@@ -61,7 +61,6 @@ var ResourceManager = {
 		// Else check if it is currently being loaded via ajax / image.src etc
 		else if (ResourceManager.waitingForResource[inReq.key] && !inReq.followup) {
 			
-			//console.log('Waiting for ' + inReq.key);
 			ResourceManager.waitingForResource[inReq.key].push(inReq);
 		}
 
@@ -175,7 +174,6 @@ var ResourceManager = {
 					ResourceManager.resources[req.masterReq.key] = ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc](req.masterReq.resources, ResourceManager.junkDiv);
 				else ResourceManager.resources[req.masterReq.key] = req.masterReq.resources;
 
-				if (ResourceManager.waitingForResource[req.key].length > 1) console.log(['Processing more than one request for ', req.key]);
 				for (var counter = 0; counter < ResourceManager.waitingForResource[req.masterReq.key].length; counter ++) {
 					var creq = ResourceManager.waitingForResource[req.masterReq.key][counter];
 					creq.processResource(ResourceManager.resources[req.masterReq.key], creq);
