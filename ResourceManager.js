@@ -143,12 +143,14 @@ var ResourceManager = {
 		});
 		image.attr({src : url});
 	},
-	processVideoRequest : function(req) {
+	processVideoRequest : function(inReq) {
+		
 		var url = inReq.url, parameters = jQuery.param(inReq.data);
 		if (parameters.length > 0) url += '?' + parameters;
 		url = encodeURI(url);
-		var video = $('<video />');
-		video.appendTo(this.options.junk);
+				
+		var video = jQuery("<video />");
+		video.appendTo(ResourceManager.junkDiv);
 		
 		video.bind("canplaythrough", function() {
 			if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](video, ResourceManager.junkDiv);
