@@ -37,13 +37,15 @@ ResourceManager.resourceProcessingFunctions.Material = function(resource, junkDi
 
 One additional "feature" is that if 2-3 requests are attempted to be made simultaneously, the first request will be made and the subsequent requests will be added to the "waitingForResources" list, and then the resource becomes available, all requests are fired to process the resource.
 
+Image and script resources have been added and tested, and video still requires testing.
+
 Caveats
 
 1) There is no automatic adding of files to implement the resourceTypeFunc functions... these have to be generated/linked by hand.
 
 Future development requirements :
 
-1) Add image.onload, script.onload, video.someEvent callbacks to make these as resource types.
+1) Video.someEvent callbacks to make these as resource types.
 2) These purely ".src" based elements will require a url : '', options : {} conversion to a single .src value
 3) A parameter to either ignore the cache or force a refresh.
 4) A slight adjustment to allow the reuse of resources having run through a different resourceTypeFunc method.

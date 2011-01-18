@@ -1,5 +1,5 @@
 
-// ResourceManager is a Singleton, a centre repository of resources loaded by the page
+// ResourceManager is a Singleton, a central repository of resources loaded by the page
 var ResourceManager = {
 		
 	// Requests to be cleared, structured as 
@@ -100,9 +100,73 @@ var ResourceManager = {
 				break;
 		}
 	},
-	processScriptRequest : function(req) {},
-	processImageRequest : function(req) {},
-	processVideoRequest : function(req) {},
+	processScriptRequest : function(inReq) {
+		var url = inReq.url, parameters = jQuery.param(inReq.data);
+		if (parameters.length > 0) url += '?' + parameters;
+		url = encodeURI(url);
+		
+		jQuery.ajax({
+			url: url,
+			dataType: 'script',
+			options : {cache : true},
+			success: function (data) {
+				if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](data, ResourceManager.junkDiv);
+				else ResourceManager.resources[inReq.key] = data;
+				
+				for (var counter = 0; counter < ResourceManager.waitingForResource[inReq.key].length; counter ++) {
+					var creq = ResourceManager.waitingForResource[inReq.key][counter];
+					creq.processResource(ResourceManager.resources[inReq.key], creq);
+				}
+				delete ResourceManager.waitingForResource[inReq.key];
+			}
+		});
+	},
+	processImageRequest : function(inReq) {
+				
+		var url = inReq.url, parameters = jQuery.param(inReq.data);
+		if (parameters.length > 0) url += '?' + parameters;
+		url = encodeURI(url);
+
+		var image = jQuery("<img />");
+		image.appendTo(ResourceManager.junkDiv);
+		
+		image.bind("load", function () {
+						
+			if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](image, ResourceManager.junkDiv);
+			else ResourceManager.resources[inReq.key] = image;
+			
+			for (var counter = 0; counter < ResourceManager.waitingForResource[inReq.key].length; counter ++) {
+				var creq = ResourceManager.waitingForResource[inReq.key][counter];
+				creq.processResource(ResourceManager.resources[inReq.key], creq);
+			}
+			delete ResourceManager.waitingForResource[inReq.key];
+		});
+		image.attr({src : url});
+	},
+	processVideoRequest : function(req) {
+		var url = inReq.url, parameters = jQuery.param(inReq.data);
+		if (parameters.length > 0) url += '?' + parameters;
+		url = encodeURI(url);
+		var video = $('<video />');
+		video.appendTo(this.options.junk);
+		
+		video.bind("canplaythrough", function() {
+			if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](video, ResourceManager.junkDiv);
+			else ResourceManager.resources[inReq.key] = video;
+			
+			for (var counter = 0; counter < ResourceManager.waitingForResource[inReq.key].length; counter ++) {
+				var creq = ResourceManager.waitingForResource[inReq.key][counter];
+				creq.processResource(ResourceManager.resources[inReq.key], creq);
+			}
+			delete ResourceManager.waitingForResource[inReq.key];
+		});  
+
+		video.attr({
+			'autobuffer' : true,
+		//	'autoplay' : 'autoplay',
+			'controls' : 'controls',
+			'src' : url});
+	},
 	processJSONRequest : function(inReq) {		
 		jQuery.ajax({
 			url: inReq.url,
@@ -169,7 +233,7 @@ var ResourceManager = {
 			// Test to see if all of the resources have been loaded
 			if (req.masterReq.nResourcesProcessed + 1 >= req.masterReq.requests.length) {
 				
-				// If the function exists, pass the resources loadedd as parameters
+				// If the function exists, pass the resources loaded as parameters
 				if (req.masterReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc])
 					ResourceManager.resources[req.masterReq.key] = ResourceManager.resourceProcessingFunctions[req.masterReq.resourceTypeFunc](req.masterReq.resources, ResourceManager.junkDiv);
 				else ResourceManager.resources[req.masterReq.key] = req.masterReq.resources;
