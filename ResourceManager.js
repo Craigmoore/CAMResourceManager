@@ -153,6 +153,7 @@ var ResourceManager = {
 		video.appendTo(ResourceManager.junkDiv);
 		
 		video.bind("canplaythrough", function() {
+			video.trigger('pause');
 			if (inReq.resourceTypeFunc && ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc]) ResourceManager.resources[inReq.key] = ResourceManager.resourceProcessingFunctions[inReq.resourceTypeFunc](video, ResourceManager.junkDiv);
 			else ResourceManager.resources[inReq.key] = video;
 			
@@ -165,7 +166,7 @@ var ResourceManager = {
 
 		video.attr({
 			'autobuffer' : true,
-		//	'autoplay' : 'autoplay',
+			'autoplay' : 'autoplay',
 			'controls' : 'controls',
 			'src' : url});
 	},
